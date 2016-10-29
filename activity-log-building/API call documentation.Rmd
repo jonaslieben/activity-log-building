@@ -8,10 +8,14 @@ output: html_document
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 #API calls
+##branches
 
 action: get all branches in a git project
 
-API-call: https://api.github.com/repos/twitter/twitter-server/branches
+API-call: GET https://api.github.com/repos/:owner/:repo/branches
+
+Example: https://api.github.com/repos/twitter/twitter-server/branches
+Example 2:https://api.github.com/repos/jonaslieben/activity-log-building/branches
 
 result: [
   {
@@ -44,4 +48,212 @@ result: [
   }
 ]
 
+## Commits
+action:  Retrieve 100 commits from a certain branch, with one of the API-calls given above. 
 
+Call: GET https://api.github.com/repos/:owner/repo/commits?per_page=100&sha=:sha&page=:page
+
+parameters: per_page = 100 => maximum
+sha: identifier of branch
+page: integer
+
+Example: GET https://api.github.com/repos/twitter/twitter-server/commits?per_page=100&sha=562f50a250c7e0f5d81d38f3d15786ce64113fa0&page=1
+Example 2: GET https://api.github.com/repos/jonaslieben/activity-log-building/commits?per_page=100&sha=7a1be56750cf5ac57cc14d99269abb613b819dac&page=1
+
+Result: [
+  {
+    "sha": "7a1be56750cf5ac57cc14d99269abb613b819dac",
+    "commit": {
+      "author": {
+        "name": "Jonas Lieben",
+        "email": "jonas.lieben@agilians.com",
+        "date": "2016-10-29T14:47:27Z"
+      },
+      "committer": {
+        "name": "Jonas Lieben",
+        "email": "jonas.lieben@agilians.com",
+        "date": "2016-10-29T14:47:27Z"
+      },
+      "message": "Added documentation about API-call in R markdown doc",
+      "tree": {
+        "sha": "8bee85c99761b41dd05282bc6262b6544561d062",
+        "url": "https://api.github.com/repos/jonaslieben/activity-log-building/git/trees/8bee85c99761b41dd05282bc6262b6544561d062"
+      },
+      "url": "https://api.github.com/repos/jonaslieben/activity-log-building/git/commits/7a1be56750cf5ac57cc14d99269abb613b819dac",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/7a1be56750cf5ac57cc14d99269abb613b819dac",
+    "html_url": "https://github.com/jonaslieben/activity-log-building/commit/7a1be56750cf5ac57cc14d99269abb613b819dac",
+    "comments_url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/7a1be56750cf5ac57cc14d99269abb613b819dac/comments",
+    "author": null,
+    "committer": null,
+    "parents": [
+      {
+        "sha": "1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97",
+        "url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97",
+        "html_url": "https://github.com/jonaslieben/activity-log-building/commit/1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97"
+      }
+    ]
+  },
+  {
+    "sha": "1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97",
+    "commit": {
+      "author": {
+        "name": "Jonas Lieben",
+        "email": "jonas.lieben@agilians.com",
+        "date": "2016-10-29T14:26:37Z"
+      },
+      "committer": {
+        "name": "Jonas Lieben",
+        "email": "jonas.lieben@agilians.com",
+        "date": "2016-10-29T14:26:37Z"
+      },
+      "message": "Created R-project",
+      "tree": {
+        "sha": "31d9e67ab9a78003190e7be61a33b565f353fdc8",
+        "url": "https://api.github.com/repos/jonaslieben/activity-log-building/git/trees/31d9e67ab9a78003190e7be61a33b565f353fdc8"
+      },
+      "url": "https://api.github.com/repos/jonaslieben/activity-log-building/git/commits/1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97",
+    "html_url": "https://github.com/jonaslieben/activity-log-building/commit/1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97",
+    "comments_url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97/comments",
+    "author": null,
+    "committer": null,
+    "parents": [
+      {
+        "sha": "790d2f80d7d910d901d9833b4796e563b1ccb3bc",
+        "url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/790d2f80d7d910d901d9833b4796e563b1ccb3bc",
+        "html_url": "https://github.com/jonaslieben/activity-log-building/commit/790d2f80d7d910d901d9833b4796e563b1ccb3bc"
+      }
+    ]
+  },
+  {
+    "sha": "790d2f80d7d910d901d9833b4796e563b1ccb3bc",
+    "commit": {
+      "author": {
+        "name": "jonaslieben",
+        "email": "jonaslieben@me.com",
+        "date": "2016-10-29T14:22:31Z"
+      },
+      "committer": {
+        "name": "jonaslieben",
+        "email": "jonaslieben@me.com",
+        "date": "2016-10-29T14:22:31Z"
+      },
+      "message": "Initial commit",
+      "tree": {
+        "sha": "ab5f16995c92d0f21d05ce2026c46f73af737979",
+        "url": "https://api.github.com/repos/jonaslieben/activity-log-building/git/trees/ab5f16995c92d0f21d05ce2026c46f73af737979"
+      },
+      "url": "https://api.github.com/repos/jonaslieben/activity-log-building/git/commits/790d2f80d7d910d901d9833b4796e563b1ccb3bc",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/790d2f80d7d910d901d9833b4796e563b1ccb3bc",
+    "html_url": "https://github.com/jonaslieben/activity-log-building/commit/790d2f80d7d910d901d9833b4796e563b1ccb3bc",
+    "comments_url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/790d2f80d7d910d901d9833b4796e563b1ccb3bc/comments",
+    "author": {
+      "login": "jonaslieben",
+      "id": 13013276,
+      "avatar_url": "https://avatars.githubusercontent.com/u/13013276?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/jonaslieben",
+      "html_url": "https://github.com/jonaslieben",
+      "followers_url": "https://api.github.com/users/jonaslieben/followers",
+      "following_url": "https://api.github.com/users/jonaslieben/following{/other_user}",
+      "gists_url": "https://api.github.com/users/jonaslieben/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/jonaslieben/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/jonaslieben/subscriptions",
+      "organizations_url": "https://api.github.com/users/jonaslieben/orgs",
+      "repos_url": "https://api.github.com/users/jonaslieben/repos",
+      "events_url": "https://api.github.com/users/jonaslieben/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/jonaslieben/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "jonaslieben",
+      "id": 13013276,
+      "avatar_url": "https://avatars.githubusercontent.com/u/13013276?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/jonaslieben",
+      "html_url": "https://github.com/jonaslieben",
+      "followers_url": "https://api.github.com/users/jonaslieben/followers",
+      "following_url": "https://api.github.com/users/jonaslieben/following{/other_user}",
+      "gists_url": "https://api.github.com/users/jonaslieben/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/jonaslieben/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/jonaslieben/subscriptions",
+      "organizations_url": "https://api.github.com/users/jonaslieben/orgs",
+      "repos_url": "https://api.github.com/users/jonaslieben/repos",
+      "events_url": "https://api.github.com/users/jonaslieben/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/jonaslieben/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": []
+  }
+]
+
+## files
+
+Action: retrieve filename of file in certain commit
+
+Call: GET https://api.github.com/repos/:owner/repo/commit/:sha
+
+Example: https://api.github.com/repos/twitter/twitter-server/git/commits/0fdf97256b0b02a255d18e2a51b3bb6d83aea5f3
+Example 2:GET https://api.github.com/repos/jonaslieben/activity-log-building/commits/7a1be56750cf5ac57cc14d99269abb613b819dac
+
+result: {
+  "sha": "7a1be56750cf5ac57cc14d99269abb613b819dac",
+  "commit": {
+    "author": {
+      "name": "Jonas Lieben",
+      "email": "jonas.lieben@agilians.com",
+      "date": "2016-10-29T14:47:27Z"
+    },
+    "committer": {
+      "name": "Jonas Lieben",
+      "email": "jonas.lieben@agilians.com",
+      "date": "2016-10-29T14:47:27Z"
+    },
+    "message": "Added documentation about API-call in R markdown doc",
+    "tree": {
+      "sha": "8bee85c99761b41dd05282bc6262b6544561d062",
+      "url": "https://api.github.com/repos/jonaslieben/activity-log-building/git/trees/8bee85c99761b41dd05282bc6262b6544561d062"
+    },
+    "url": "https://api.github.com/repos/jonaslieben/activity-log-building/git/commits/7a1be56750cf5ac57cc14d99269abb613b819dac",
+    "comment_count": 0
+  },
+  "url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/7a1be56750cf5ac57cc14d99269abb613b819dac",
+  "html_url": "https://github.com/jonaslieben/activity-log-building/commit/7a1be56750cf5ac57cc14d99269abb613b819dac",
+  "comments_url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/7a1be56750cf5ac57cc14d99269abb613b819dac/comments",
+  "author": null,
+  "committer": null,
+  "parents": [
+    {
+      "sha": "1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97",
+      "url": "https://api.github.com/repos/jonaslieben/activity-log-building/commits/1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97",
+      "html_url": "https://github.com/jonaslieben/activity-log-building/commit/1abdbf4fdc4dd7d065958864cf4cd14c9fa45a97"
+    }
+  ],
+  "stats": {
+    "total": 47,
+    "additions": 47,
+    "deletions": 0
+  },
+  "files": [
+    {
+      "sha": "ffe9bf9d9a6966844fda57ff1da10fcc63eb5fdc",
+      "filename": "activity-log-building/API call documentation.Rmd",
+      "status": "added",
+      "additions": 47,
+      "deletions": 0,
+      "changes": 47,
+      "blob_url": "https://github.com/jonaslieben/activity-log-building/blob/7a1be56750cf5ac57cc14d99269abb613b819dac/activity-log-building/API%20call%20documentation.Rmd",
+      "raw_url": "https://github.com/jonaslieben/activity-log-building/raw/7a1be56750cf5ac57cc14d99269abb613b819dac/activity-log-building/API%20call%20documentation.Rmd",
+      "contents_url": "https://api.github.com/repos/jonaslieben/activity-log-building/contents/activity-log-building/API%20call%20documentation.Rmd?ref=7a1be56750cf5ac57cc14d99269abb613b819dac",
+      "patch": "@@ -0,0 +1,47 @@\n+---\n+title: \"Documentation API calls\"\n+author: \"Jonas Lieben\"\n+date: \"10/29/2016\"\n+output: html_document\n+---\n+\n+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.\n+\n+#API calls\n+\n+action: get all branches in a git project\n+\n+API-call: https://api.github.com/repos/twitter/twitter-server/branches\n+\n+result: [\n+  {\n+    \"name\": \"2.9.2\",\n+    \"commit\": {\n+      \"sha\": \"dd75c945203fb4e50fa6aa9a96baf0d677d86eee\",\n+      \"url\": \"https://api.github.com/repos/twitter/twitter-server/commits/dd75c945203fb4e50fa6aa9a96baf0d677d86eee\"\n+    }\n+  },\n+  {\n+    \"name\": \"develop\",\n+    \"commit\": {\n+      \"sha\": \"562f50a250c7e0f5d81d38f3d15786ce64113fa0\",\n+      \"url\": \"https://api.github.com/repos/twitter/twitter-server/commits/562f50a250c7e0f5d81d38f3d15786ce64113fa0\"\n+    }\n+  },\n+  {\n+    \"name\": \"gh-pages\",\n+    \"commit\": {\n+      \"sha\": \"61db4934854a77b164772170f4cbb4181fd460f3\",\n+      \"url\": \"https://api.github.com/repos/twitter/twitter-server/commits/61db4934854a77b164772170f4cbb4181fd460f3\"\n+    }\n+  },\n+  {\n+    \"name\": \"master\",\n+    \"commit\": {\n+      \"sha\": \"e174d7ff4b3eb490e7702d1cef979ecb23f73363\",\n+      \"url\": \"https://api.github.com/repos/twitter/twitter-server/commits/e174d7ff4b3eb490e7702d1cef979ecb23f73363\"\n+    }\n+  }\n+]\n+\n+"
+    }
+  ]
+}
