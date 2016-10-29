@@ -4,7 +4,7 @@ source("Extract_data_functions.R")
 
 #GitHub authentication data
 username = "jonaslieben"
-password = "test123"
+password = 
 
 #Github project data
 owner = "twitter"
@@ -16,4 +16,5 @@ authenticate <- authenticate(username,password)
 branchIdentifiers <- retrieveIdentifiersBranches(authenticate,owner,repository)
 branchIdentifiers
 
-#for(string in shaStrings)
+commitIdentifiers <- retrieveAllCommitIdentifiers(authenticate, owner, repository)
+commitIdentifiers
