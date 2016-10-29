@@ -1,0 +1,47 @@
+---
+title: "Documentation API calls"
+author: "Jonas Lieben"
+date: "10/29/2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+#API calls
+
+action: get all branches in a git project
+
+API-call: https://api.github.com/repos/twitter/twitter-server/branches
+
+result: [
+  {
+    "name": "2.9.2",
+    "commit": {
+      "sha": "dd75c945203fb4e50fa6aa9a96baf0d677d86eee",
+      "url": "https://api.github.com/repos/twitter/twitter-server/commits/dd75c945203fb4e50fa6aa9a96baf0d677d86eee"
+    }
+  },
+  {
+    "name": "develop",
+    "commit": {
+      "sha": "562f50a250c7e0f5d81d38f3d15786ce64113fa0",
+      "url": "https://api.github.com/repos/twitter/twitter-server/commits/562f50a250c7e0f5d81d38f3d15786ce64113fa0"
+    }
+  },
+  {
+    "name": "gh-pages",
+    "commit": {
+      "sha": "61db4934854a77b164772170f4cbb4181fd460f3",
+      "url": "https://api.github.com/repos/twitter/twitter-server/commits/61db4934854a77b164772170f4cbb4181fd460f3"
+    }
+  },
+  {
+    "name": "master",
+    "commit": {
+      "sha": "e174d7ff4b3eb490e7702d1cef979ecb23f73363",
+      "url": "https://api.github.com/repos/twitter/twitter-server/commits/e174d7ff4b3eb490e7702d1cef979ecb23f73363"
+    }
+  }
+]
+
+
