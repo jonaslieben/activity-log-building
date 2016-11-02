@@ -175,27 +175,55 @@ tenMostModifiedFiles <- function(eventDataTable) {
     filter(status == "modified") %>% 
     group_by(filename) %>% 
     summarise(amount = n())
-  #order the rows in descending order based on the column amount and take the top 5 rows based on the amount
-  return(modificationsInFile %>% arrange(desc(amount)) %>% top_n(10, amount))
+  #order the rows in descending order based on the column amount and take the top 10 rows
+  return(modificationsInFile %>% arrange(desc(amount)) %>% top_n(10))
 }
 #Ten most active people in terms of commits
 tenMostActivePeopleOnCommits <- function(eventDataTable) {
-  #
-  return(eventDataDplyr %>%
+  #select the author and the identifier, remove the duplicate rows and group on author, calculate the amount of rows 
+  #and ungroup in order that they can be ordered in descending order. Show only the top 10 rows
+  return(eventDataTable %>%
            select(author, identifier) %>%
            distinct() %>%
            group_by(author) %>% 
            summarise(amount = n()) %>% 
            ungroup() %>% 
            arrange(desc(amount)) %>% 
-           top_n(10, amount))
+           top_n(10))
 }
 
-#Five most active people in terms of files changed, added, removed and renamed
-fiveMostActivePeopleOnFileOperations <- function(eventDataTable) {
-  
+#Ten most active people in terms of files changed, added, removed and renamed
+tenMostActivePeopleOnFileOperations <- function(eventDataTable) {
+  #select the author and the identifier, 
+  #leave the duplicate rows (difference with function above), because each row represents a file which was modified, added, removed or renamed 
+  #group on author, calculate the amount of rows 
+  #and ungroup in order that they can be ordered in descending order. Show only the top 10 rows
+  return(eventDataTable %>%
+           select(author, identifier) %>%
+           group_by(author) %>% 
+           summarise(amount = n()) %>% 
+           ungroup() %>% 
+           arrange(desc(amount)) %>% 
+           top_n(10))
 }
 
+#The number of different files on which the ten most active people work 
+numberFilesTenMostActivePeople <- function(eventDataTable) {
+  #get the ten most active people
+  authors <- tenMostActivePeopleOnFileOperations(eventDataTable)
+  #filter the dataset based on these people, select the column author and file name, 
+  #remove duplicate rows (otherwise we will not have measured the number of different files)
+  #group by author, count the amount of rows, 
+  #ungroup in order that we can order in descending order
+  return(eventDataTable %>% 
+           filter(author %in% authors$author) %>% 
+           select(author, filename) %>% 
+           distinct() %>% 
+           group_by(author) %>% 
+           summarise(number = n()) %>% 
+           ungroup %>% 
+           arrange(desc(number)))
+}
 #Average amount of files per commit
 averageFilesPerCommit <- function(eventDataTable) {
   #average = amount of unique files divided by the amount of commits
