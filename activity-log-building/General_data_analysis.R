@@ -27,6 +27,45 @@ averageCommitsPerPerson <- function(eventDataTable) {
   return(amountOfCommits(eventDataTable) / amountOfPeopleContributed(eventDataTable))
 }
 
+#Max amount of commits by one person
+maxCommitsPerPerson <- function(eventDataTable) {
+  #select column author and identifier, group table on author and count the amount of identifier per person
+  commitsByOnePerson <- eventDataTable %>% select(author,identifier) %>% distinct() %>% group_by(author) %>% summarise(commits = n())
+  
+  #take the maximum 
+  return(summarise(commitsByOnePerson,max(commits)))
+}
+
+#Min amount of commits by one person
+minCommitsPerPerson <- function(eventDataTable) {
+  #select column author and identifier, group table on author and count the amount of identifiers per person
+  commitsByOnePerson <- eventDataTable %>% select(author,identifier) %>% distinct() %>% group_by(author) %>% summarise(commits = n())
+  
+  #take the minimum 
+  return(summarise(commitsByOnePerson,min(commits)))
+}
+
+#Max amount of files changed by one person
+maxFilesChangedPerPerson <- function(eventDataTable) {
+  #select column author and filename, delete all duplicated rows, group table on author and count the amount of files per person
+  filesChangedByOnePerson <- eventDataTable %>% select(author,filename) %>% distinct() %>% group_by(author) %>% summarise(files = n())
+  #take the maximum
+  return(summarise(filesChangedByOnePerson, max(files)))
+}
+
+#Min amount of files changed by one person
+minFilesChangedPerPerson <- function(eventDataTable) {
+  #select column author and filename, delete all duplicated rows, group table on author and count the amount of files per person
+  filesChangedByOnePerson <- eventDataTable %>% select(author,filename) %>% distinct() %>% group_by(author) %>% summarise(files = n())
+  #take the minimum
+  return(summarise(filesChangedByOnePerson, min(files)))
+}
+
+#Amount of files added, modified, removed and renamed 
+amountOfFileOperationsPerType <- function(eventDataTable) {
+  eventDataDplyr %>% select(identifier, status) %>% group_by(status) %>% summarise(amount = n())
+}
+
 #Average amount of files per commit
 averageFilesPerCommit <- function(eventDataTable) {
   #average = amount of unique files divided by the amount of commits
