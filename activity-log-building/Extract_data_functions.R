@@ -65,13 +65,13 @@ extractEventData <- function(authentication, owner, repository) {
     #check the amount of files for a certain commit
     amountOfReps <- length(commitData$files$filename)
     
-    #As the author, date and message are a single observation for many files, they are duplicated, in order that the rows will still match in the dataframe
+    #As the author, date, timestamp and message are a single observation for many files, they are duplicated, in order that the rows will still match in the dataframe
     identifier <- rep(commitIdentifier, amountOfReps)
     author <- rep(commitData$commit$author$name, amountOfReps)
-    date <- rep(commitData$commit$author$date, amountOfReps)
+    timestamp <- rep(paste(substr(commitData$commit$author$date, 0, 10), " _ ", substr(commitData$commit$author$date, 12, 19)), amountOfReps)
     message <- rep(commitData$commit$message, amountOfReps)
     #create the dataframe with the new event data
-    newEventData <- data.frame(identifier, author, date, message, filename = commitData$files$filename, status = commitData$files$status)
+    newEventData <- data.frame(identifier, author, date, timestamp, message, filename = commitData$files$filename, status = commitData$files$status)
     # add the new event data to the current event data
     eventData <- rbind(eventData,newEventData)
   }
