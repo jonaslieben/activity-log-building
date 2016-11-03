@@ -71,7 +71,7 @@ extractEventData <- function(authentication, owner, repository) {
     timestamp <- rep(paste(substr(commitData$commit$author$date, 0, 10), " _ ", substr(commitData$commit$author$date, 12, 19)), amountOfReps)
     message <- rep(commitData$commit$message, amountOfReps)
     #create the dataframe with the new event data
-    newEventData <- data.frame(identifier, author, date, timestamp, message, filename = commitData$files$filename, status = commitData$files$status)
+    newEventData <- data.frame(identifier, author, timestamp, message, filename = commitData$files$filename, status = commitData$files$status)
     # add the new event data to the current event data
     eventData <- rbind(eventData,newEventData)
   }
