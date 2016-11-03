@@ -5,26 +5,169 @@ date: "11/3/2016"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, cache=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(gridExtra)
+library(jsonlite)
+library(httr)
+library(jsonlite)
+library(httr)
+
+source("Extract_data_functions.R")
+source("General_data_analysis.R")
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r extraction, cache=TRUE, include=FALSE}
+#GitHub authentication data
+username = "jonaslieben"
+#do not forget to add a password
+password = ""
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#Github project data
+owner = "twitter"
+repository = "twitter-server"
 
-```{r cars}
-summary(cars)
+#owner = "jonaslieben"
+#repository = "activity-log-building"
+  
+#set up the authentication 
+authenticate <- authenticate(username,password)
+
+branchIdentifiers <- retrieveIdentifiersBranches(authenticate,owner,repository)
+branchIdentifiers
+
+commitIdentifiers <- retrieveAllCommitIdentifiers(authenticate, owner, repository)
+commitIdentifiers
+
+eventData <- extractEventData(authenticate, owner, repository)
+eventDataTable <- tbl_df(eventData)
+
 ```
 
-## Including Plots
+## Explorative data analysis
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+###The amount of commits
+```{r, echo=FALSE, cache=TRUE}
+amountOfCommits(eventDataTable)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+###Amount of unique files currently in project
+```{r, echo=FALSE, cache=TRUE}
+amountOfFilesCurrrentlyInProject(eventDataTable)
+```
+
+###Amount of unique files which have been in the project
+```{r, echo=FALSE, cache=TRUE}
+amountOfFilesHaveBeenInProject(eventDataTable)
+```
+
+
+###Amount of people who contributed
+```{r, echo=FALSE, cache=TRUE}
+amountOfPeopleContributed(eventDataTable)
+```
+
+###Average amount of commits by one person
+```{r, echo=FALSE, cache=TRUE}
+averageCommitsPerPerson(eventDataTable)
+```
+
+###Max amount of commits by one person
+```{r, echo=FALSE, cache=TRUE}
+maxCommitsPerPerson(eventDataTable)
+```
+
+###Min amount of commits by one person
+```{r, echo=FALSE, cache=TRUE}
+minCommitsPerPerson(eventDataTable)
+```
+
+###Max amount of files changed by one person
+```{r, echo=FALSE, cache=TRUE}
+maxFilesChangedPerPerson(eventDataTable)
+```
+
+###Min amount of files changed by one person
+```{r, echo=FALSE, cache=TRUE}
+minFilesChangedPerPerson(eventDataTable)
+```
+
+###Amount of files added, modified, removed and renamed 
+```{r, echo=FALSE, cache=TRUE}
+amountOfFileOperationsPerType(eventDataTable)
+```
+
+###Average amount of modification, additions, removes and renames per person
+```{r, echo=FALSE, cache=TRUE}
+averageAmountOfFilesOperationsPerTypePerPerson(eventDataTable)
+```
+
+###Max amount of modification, additions, removes and renames per person
+```{r, echo=FALSE, cache=TRUE}
+maxAmountOfFilesOperationsPerTypePerPerson(eventDataTable)
+```
+
+###Min amount of modification, additions, removes and renames per person
+```{r, echo=FALSE, cache=TRUE}
+minAmountOfFilesOperationsPerTypePerPerson(eventDataTable)
+```
+
+###Commit messages used more than once for a different commits
+```{r, echo=FALSE, cache=TRUE}
+commitMessagesUsedMoreThanOnce(eventDataTable)
+```
+
+###Author of commits with the same message
+```{r, echo=FALSE, cache=TRUE}
+AuthorOfCommitsWithMessagesUsedMoreThanOnce(eventDataTable)
+```
+
+###Ten most modified files
+```{r, echo=FALSE, cache=TRUE}
+tenMostModifiedFiles(eventDataTable)
+```
+
+###Ten most active people in terms of commits
+```{r, echo=FALSE, cache=TRUE}
+tenMostActivePeopleOnCommits(eventDataTable)
+```
+
+###Ten most active people in terms of files changed, added, removed and renamed
+```{r, echo=FALSE, cache=TRUE}
+tenMostActivePeopleOnFileOperations(eventDataTable)
+```
+
+###The number of different files on which the ten most active people work 
+```{r, echo=FALSE, cache=TRUE}
+numberFilesTenMostActivePeople(eventDataTable)
+```
+
+###Average amount of files per commit
+```{r, echo=FALSE, cache=TRUE}
+averageFilesPerCommit(eventDataTable)
+```
+
+###Average amount of file changes (added/modified/removed) per person
+```{r, echo=FALSE, cache=TRUE}
+averageFilesPerPerson(eventDataTable)
+```
+
+###Commits over time per month
+```{r, echo=FALSE, cache=TRUE}
+commitsOverTime(eventDataTable)
+```
+
+###Files changes/added/deleted over time
+```{r, echo=FALSE, cache=TRUE}
+fileOperationsOverTime(eventDataTable)
+```
+
+###Amount of active users over time
+```{r, echo=FALSE, cache=TRUE}
+amountOfActiveUsers(eventDataTable)
+```
+
