@@ -239,65 +239,93 @@ averageFilesPerPerson <- function(eventDataTable) {
 
 #Commits over time per month
 commitsOverTime <- function(eventDataTable) {
+  #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
+  #convert the timestamp to a date by keeping only the first ten characters
   eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
+  #make the input table for the chart which contains the date and all commits, with removed duplicated rows, grouped on date in order that the amount of commits per date can be summed
   inputDataChart <- eventDataTableTemp %>% 
     select(date, identifier) %>% 
     distinct() %>% 
     group_by(date) %>% 
     summarise(number = n())
+  #make a line chart with on the x-axis the date and the y-axis the number of commits
   chart <- ggplot(inputDataChart) + geom_line(aes(x = date, y = number)) + ylab("number of commits")
   return(chart)
 }
 #Files changes/added/deleted over time
 fileOperationsOverTime <- function(eventDataTable) {
+  #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
+  #convert the timestamp to a date by keeping only the first ten characters
   eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
+  #make the input table for the modifiedchart which contains the date and all files which are modified grouped on date in order that the number of modified files can be summed
   inputDataChart <- eventDataTableTemp %>% 
     select(filename,status, identifier, date) %>% 
     filter(status == "modified") %>%
-    group_by(status, date) %>% 
+    group_by(date) %>% 
     summarise(amount = n()) 
-  
+  #make the chart using ggplot and a bar chart with inputDataChart as the data, the date mapped on the x-axis and the amount mapped on the y-axis
   modifiedChart <- ggplot(inputDataChart) + geom_bar(aes(x = date, y = amount), stat = "identity") + ylab("number of files modified")
   
+  #make the input table for the addedChart which contains the date and all files which are added grouped on date in order that the number of added files can be summed
   inputDataChart <- eventDataTableTemp %>% 
     select(filename,status, identifier, date) %>% 
     filter(status == "added") %>%
-    group_by(status, date) %>% 
-    summarise(amount = n()) 
+    group_by(date) %>% 
+    summarise(amount = n())
+  #make the chart using ggplot and a bar chart with inputDataChart as the data, the date mapped on the x-axis and the amount mapped on the y-axis
   addedChart <- ggplot(inputDataChart) + geom_bar(aes(x = date, y = amount), stat = "identity") + ylab("number of files added")
   
+  #make the input table for the removedChart which contains the date and all files which are removed grouped on date in order that the number of removed files can be summed
   inputDataChart <- eventDataTableTemp %>% 
     select(filename,status, identifier, date) %>% 
     filter(status == "removed") %>%
-    group_by(status, date) %>% 
+    group_by(date) %>% 
     summarise(amount = n()) 
+  #make the chart using ggplot and a bar chart with inputDataChart as the data, the date mapped on the x-axis and the amount mapped on the y-axis
   removedChart <- ggplot(inputDataChart) + geom_bar(aes(x = date, y = amount), stat = "identity") + ylab("number of files removed")
   
+  #make the input table for the renamedChart which contains the date and all files which are added grouped on date in order that the number of renamed files can be summed
   inputDataChart <- eventDataTableTemp %>% 
     select(filename,status, identifier, date) %>% 
-    filter(status == "renamed") %>%
+    filter("renamed") %>%
     group_by(status, date) %>% 
     summarise(amount = n()) 
+  #make the chart using ggplot and a bar chart with inputDataChart as the data, the date mapped on the x-axis and the amount mapped on the y-axis
   renamedChart <- ggplot(inputDataChart) + geom_bar(aes(x = date, y = amount), stat = "identity") + ylab("number of files renamed")
   
+  #put all charts into one grid with two columns
   grid.arrange(modifiedChart, addedChart, removedChart, renamedChart, ncol = 2)
   return(grid)
 }
 
 #Amount of active users over time
 amountOfActiveUsers <- function(eventDataTable) {
+  #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
+  #convert the timestamp to a date by keeping only the first ten characters
   eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
-  inputDataChart <- eventDataTableTemp %>% 
+  #make the input table for the chart which contains the date and all authors where duplicate rows are removed, grouped on date in order that the amount of active users per month can be calculated
+  inputDataChart <- eventDataTableTemp %>%
     select(author, date) %>% 
     distinct() %>%
     group_by(date) %>% 
     summarise(amount = n()) 
-  chart <- ggplot(inputDataChart) + geom_line(aes(x = date, y = amount)) + ylab("amount of active users") + scale_y_continuous(breaks = 1:10)
+  
+  #calculate the min amount of active users in a month
+  minimumActiveUsers <- inputDataChart %>% summarise(min(amount))
+  #calculate the max amount of active users in a month
+  maximumActiveUsers <- inputDataChart %>% summarise(max(amount))
+
+  #make the chart using ggplot and a line chart with inputDataChart as the data, the date mapped on the x-axis and the amount mapped on the y-axis
+  #the y-axis is using a scale with tick-marks from the min to the max amount of active users in steps of one
+  chart <- ggplot(inputDataChart) + geom_line(aes(x = date, y = amount)) + ylab("amount of active users") + scale_y_continuous(breaks = minimumActiveUsers$`min(amount)`:maximumActiveUsers$`max(amount)`)
   return(chart)
 }
