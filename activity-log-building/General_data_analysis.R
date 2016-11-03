@@ -1,6 +1,7 @@
 library(dplyr)
 library(lubridate)
-
+library(ggplot2)
+library(gridExtra)
 
 #Amount of commits
 amountOfCommits <- function(eventDataTable) {
@@ -232,11 +233,71 @@ averageFilesPerCommit <- function(eventDataTable) {
 
 #Average amount of file changes (added/modified/removed) per person
 averageFilesPerPerson <- function(eventDataTable) {
+  #avg equals average commits per person times average files per commit
   return(averageCommitsPerPerson(eventDataTable) * averageFilesPerCommit(eventDataTable))
 }
 
-#Commits over time
-
+#Commits over time per month
+commitsOverTime <- function(eventDataTable) {
+  eventDataTableTemp <- eventDataTable
+  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
+  inputDataChart <- eventDataTableTemp %>% 
+    select(date, identifier) %>% 
+    distinct() %>% 
+    group_by(date) %>% 
+    summarise(number = n())
+  chart <- ggplot(inputDataChart) + geom_line(aes(x = date, y = number)) + ylab("number of commits")
+  return(chart)
+}
 #Files changes/added/deleted over time
+fileOperationsOverTime <- function(eventDataTable) {
+  eventDataTableTemp <- eventDataTable
+  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
+  inputDataChart <- eventDataTableTemp %>% 
+    select(filename,status, identifier, date) %>% 
+    filter(status == "modified") %>%
+    group_by(status, date) %>% 
+    summarise(amount = n()) 
+  
+  modifiedChart <- ggplot(inputDataChart) + geom_bar(aes(x = date, y = amount), stat = "identity") + ylab("number of files modified")
+  
+  inputDataChart <- eventDataTableTemp %>% 
+    select(filename,status, identifier, date) %>% 
+    filter(status == "added") %>%
+    group_by(status, date) %>% 
+    summarise(amount = n()) 
+  addedChart <- ggplot(inputDataChart) + geom_bar(aes(x = date, y = amount), stat = "identity") + ylab("number of files added")
+  
+  inputDataChart <- eventDataTableTemp %>% 
+    select(filename,status, identifier, date) %>% 
+    filter(status == "removed") %>%
+    group_by(status, date) %>% 
+    summarise(amount = n()) 
+  removedChart <- ggplot(inputDataChart) + geom_bar(aes(x = date, y = amount), stat = "identity") + ylab("number of files removed")
+  
+  inputDataChart <- eventDataTableTemp %>% 
+    select(filename,status, identifier, date) %>% 
+    filter(status == "renamed") %>%
+    group_by(status, date) %>% 
+    summarise(amount = n()) 
+  renamedChart <- ggplot(inputDataChart) + geom_bar(aes(x = date, y = amount), stat = "identity") + ylab("number of files renamed")
+  
+  grid.arrange(modifiedChart, addedChart, removedChart, renamedChart, ncol = 2)
+  return(grid)
+}
 
 #Amount of active users over time
+amountOfActiveUsers <- function(eventDataTable) {
+  eventDataTableTemp <- eventDataTable
+  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
+  inputDataChart <- eventDataTableTemp %>% 
+    select(author, date) %>% 
+    distinct() %>%
+    group_by(date) %>% 
+    summarise(amount = n()) 
+  chart <- ggplot(inputDataChart) + geom_line(aes(x = date, y = amount)) + ylab("amount of active users") + scale_y_continuous(breaks = 1:10)
+  return(chart)
+}
