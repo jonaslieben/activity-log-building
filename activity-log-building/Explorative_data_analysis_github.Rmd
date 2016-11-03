@@ -50,6 +50,11 @@ eventDataTable <- tbl_df(eventData)
 
 ## Explorative data analysis
 
+###Summary of the data
+```{r, echo=FALSE, cache=TRUE}
+summary(eventData)
+```
+
 ###The amount of commits
 ```{r, echo=FALSE, cache=TRUE}
 amountOfCommits(eventDataTable)

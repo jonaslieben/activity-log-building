@@ -1,11 +1,13 @@
 library(jsonlite)
 library(httr)
+
+
 source("Extract_data_functions.R")
 
 #GitHub authentication data
 username = "jonaslieben"
 #do not forget to add a password
-password = 
+password = "test123"
 
 #Github project data
 owner = "twitter"
