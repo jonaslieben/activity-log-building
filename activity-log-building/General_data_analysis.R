@@ -124,7 +124,7 @@ maxAmountOfFilesOperationsPerTypePerPerson <- function(eventDataTable) {
   maxOperations <- operationsPerTypePerAuthor %>% 
     group_by(status) %>% 
     summarise(max(amount))
-  return(averageOperations)
+  return(maxOperations)
 }
 
 #Min amount of modification, additions, removes and renames per person
@@ -138,7 +138,7 @@ minAmountOfFilesOperationsPerTypePerPerson <- function(eventDataTable) {
   minOperations <- operationsPerTypePerAuthor %>% 
     group_by(status) %>%
     summarise(min(amount))
-  return(averageOperations)
+  return(minOperations)
 }
 #Commit messages used more than once for a different commits
 commitMessagesUsedMoreThanOnce <- function(eventDataTable) {
