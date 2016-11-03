@@ -293,7 +293,7 @@ fileOperationsOverTime <- function(eventDataTable) {
   #make the input table for the renamedChart which contains the date and all files which are added grouped on date in order that the number of renamed files can be summed
   inputDataChart <- eventDataTableTemp %>% 
     select(filename,status, identifier, date) %>% 
-    filter("renamed") %>%
+    filter(status == "renamed") %>%
     group_by(status, date) %>% 
     summarise(amount = n()) 
   #make the chart using ggplot and a bar chart with inputDataChart as the data, the date mapped on the x-axis and the amount mapped on the y-axis
