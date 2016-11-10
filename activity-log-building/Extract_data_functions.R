@@ -82,6 +82,7 @@ extractEventData <- function(authentication, owner, repository) {
 
 addBeginningTimestamp <- function(eventData) {
   tempEventData <- tbl_df(eventData)
+  
   #add as a temporary beginning timestemp the endTimestamp
   tempEventData$beginningTimestamp <- tempEventData$endTimestamp
   
@@ -90,12 +91,13 @@ addBeginningTimestamp <- function(eventData) {
   
   #for each row, put a beginning timestamp using the data manipulation techniques described below
   for(i in 1:amountOfRecords) {
-    #save the identifier
+    #save the identifier and author. The unlisting is done in order to be able to make comparisons
     identifierAtIndex <- tempEventData %>% select(identifier) %>% slice(i)
     identifierAtIndex <- unlist(identifierAtIndex)
     authorAtIndex <- tempEventData %>% select(author) %>% slice(i)
     authorAtIndex <- unlist(authorAtIndex)
-    #make a table containing only the identifier and endTimeStamp of the author who did the commit of record i and sort them in descending order
+    
+    #make a table containing only the identifiers and endTimeStamp of the author, who did the commit of record i, and sort all rows on endTimestamp in descending order
     authorEventData <- tempEventData %>% filter(authorAtIndex == author) %>% arrange(desc(endTimestamp)) %>% select(endTimestamp,identifier) %>% distinct()
     
     #look up the index of the row of the AuthorEventData object with the identifier which is saved earlier
@@ -110,8 +112,7 @@ addBeginningTimestamp <- function(eventData) {
     } else {
       beginningTimestamp <- authorEventData$endTimestamp[1]
     }
-    beginningTimestamp
-    eventData$beginningTimestamp[i]
+    
     #put the beginningTimeStamp in the dataObject
     eventData$beginningTimestamp[i] <- beginningTimestamp
   }
