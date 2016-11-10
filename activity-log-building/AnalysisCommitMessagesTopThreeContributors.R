@@ -1,10 +1,9 @@
 
 
 
-
 simplifyCommitMessage <- function(eventDataTable, contributorNumberOfTop, amountOfWords) {
-  # look up top 3 thre contributors by selecting the author, identifier, group by author in order to count the number of rows for
-  # each author, ungroup in order to order all rows in descending order and select only the top 3 authors
+  # look up top number of contributors by selecting the author, identifier, group by author in order to count the number of rows for
+  # each author, ungroup in order to order all rows in descending order and select only the top authors
   topContributors <- eventDataTable %>%
     select(author, identifier) %>%
     group_by(author) %>% 
@@ -28,7 +27,7 @@ simplifyCommitMessage <- function(eventDataTable, contributorNumberOfTop, amount
       commitMessages$message[i] <- trimws(commitMessages$message[i])
       commitMessages$message[i] <- word(commitMessages$message[i], 1, amountOfWords)
       # check if the string contains a "]". In most cases there is something done to the branch such as a split. 
-      #As this is less relevant for the activity, we don't keep this Therefore, we keep all words after the "]".
+      # As this is less relevant for the activity, we don't keep the word before ]. Therefore, we keep all words after the "]".
       # Then we trim the string in order that no spaces are at the beginning of the string
       # Then we keep only the amountOfWords given in the input
     } else if(grepl("]", commitMessages$message[i])) {
@@ -36,6 +35,7 @@ simplifyCommitMessage <- function(eventDataTable, contributorNumberOfTop, amount
       commitMessages$message[i] <- trimws(commitMessages$message[i])
       commitMessages$message[i] <- word(commitMessages$message[i], 1, amountOfWords)
     } else {
+      # if it does not contain a ":" or "]", we keep only the amountOfWords given in the input
       commitMessages$message[i] <- word(commitMessages$message[i], 1, amountOfWords)
     }
   }
