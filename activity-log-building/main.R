@@ -26,4 +26,5 @@ commitIdentifiers <- retrieveAllCommitIdentifiers(authenticate, owner, repositor
 commitIdentifiers
 
 eventData <- extractEventData(authenticate, owner, repository)
+eventData <- addBeginningTimestamp(eventData)
 str(eventData)

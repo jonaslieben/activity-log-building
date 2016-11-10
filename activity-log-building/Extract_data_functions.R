@@ -1,5 +1,7 @@
 library(jsonlite)
 library(httr)
+library(dplyr)
+library(lubridate)
 
 # get all identifiers of all branches of a certain repository on github in a vector. Inputs are the authentication, owner and repository
 retrieveIdentifiersBranches <- function(authentication, owner, repository) {
@@ -68,12 +70,53 @@ extractEventData <- function(authentication, owner, repository) {
     #As the author, date, timestamp and message are a single observation for many files, they are duplicated, in order that the rows will still match in the dataframe
     identifier <- rep(commitIdentifier, amountOfReps)
     author <- rep(commitData$commit$author$name, amountOfReps)
-    timestamp <- rep(paste(substr(commitData$commit$author$date, 0, 10), " _ ", substr(commitData$commit$author$date, 12, 19)), amountOfReps)
+    endTimestamp <- rep(paste(substr(commitData$commit$author$date, 0, 10), " _ ", substr(commitData$commit$author$date, 12, 19)), amountOfReps)
     message <- rep(commitData$commit$message, amountOfReps)
     #create the dataframe with the new event data
-    newEventData <- data.frame(identifier, author, timestamp, message, filename = commitData$files$filename, status = commitData$files$status)
+    newEventData <- data.frame(identifier, author, endTimestamp, message, filename = commitData$files$filename, status = commitData$files$status)
     # add the new event data to the current event data
     eventData <- rbind(eventData,newEventData)
   }
   return(eventData)
 }
+
+addBeginningTimestamp <- function(eventData) {
+  tempEventData <- tbl_df(eventData)
+  #add as a temporary beginning timestemp the endTimestamp
+  tempEventData$beginningTimestamp <- tempEventData$endTimestamp
+  
+  #save the amount of records in a new variable
+  amountOfRecords <- length(eventData$author)
+  
+  #for each row, put a beginning timestamp using the data manipulation techniques described below
+  for(i in 1:amountOfRecords) {
+    #save the identifier
+    identifierAtIndex <- tempEventData %>% select(identifier) %>% slice(i)
+    identifierAtIndex <- unlist(identifierAtIndex)
+    authorAtIndex <- tempEventData %>% select(author) %>% slice(i)
+    authorAtIndex <- unlist(authorAtIndex)
+    #make a table containing only the identifier and endTimeStamp of the author who did the commit of record i and sort them in descending order
+    authorEventData <- tempEventData %>% filter(authorAtIndex == author) %>% arrange(desc(endTimestamp)) %>% select(endTimestamp,identifier) %>% distinct()
+    
+    #look up the index of the row of the AuthorEventData object with the identifier which is saved earlier
+    indexAuthorEventData <- match(identifierAtIndex, authorEventData$identifier)
+    #the index of the beginning timestamp is just the row before in the authorEventData table
+    indexPreviousRowAuthorEventData <- indexAuthorEventData - 1
+    
+    #if there is a previous row, take the endtimestamp of the previous activity executed by the author as the beginning timestamp
+    #if there is no previous row, take the endtimestamp of the current activity as the beginning timestamp
+    if(indexPreviousRowAuthorEventData != 0) {
+      beginningTimestamp <- authorEventData$endTimestamp[indexPreviousRowAuthorEventData]
+    } else {
+      beginningTimestamp <- authorEventData$endTimestamp[1]
+    }
+    beginningTimestamp
+    eventData$beginningTimestamp[i]
+    #put the beginningTimeStamp in the dataObject
+    eventData$beginningTimestamp[i] <- beginningTimestamp
+  }
+  
+  #return the table with the beginningTimeStamp
+  return(eventData)
+}
+
