@@ -3,6 +3,7 @@ library(httr)
 
 
 source("Extract_data_functions.R")
+source("Classify_commit_messages.R")
 
 #GitHub authentication data
 username = "jonaslieben"
@@ -28,3 +29,6 @@ commitIdentifiers
 eventData <- extractEventData(authenticate, owner, repository)
 eventData <- addBeginningTimestamp(eventData)
 str(eventData)
+
+classificationScheme <- loadClassificationScheme()
+eventDataTable <- countAccordingToClassificationScheme(preprocessingNlp(eventData), classificationScheme)

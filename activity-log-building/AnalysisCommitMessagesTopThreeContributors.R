@@ -1,32 +1,3 @@
-
-preprocessingNlp <- function(eventDataTable) {
-  #read all unique commitMessages from the eventDataTable
-  commitMessages <- eventDataTable %>% select(message) %>% distinct()
-  #convert the factor variable to a character variable
-  commitMessages$message <- as.character(commitMessages$message)
-  
-  #remove \n from the text
-  for(i in 1:length(commitMessages$message)) {
-    commitMessages$message[i] <- gsub("\n", " ", commitMessages$message[i])
-  }
-  
-  #read the corpus in, in order to do all the processing steps below
-  corpus <- Corpus(DataframeSource(data.frame(commitMessages)))
-  #stemming the text. This means that every word becomes the stem. For example adds becomes add
-  corpus.temp <- tm_map(corpus, stemDocument, language = "english")
-  #remove the unnecessary whitespaces
-  corpus.temp<-tm_map(corpus.temp, stripWhitespace)
-  #remove stopwords
-  corpus.temp<-tm_map(corpus.temp, removeWords, stopwords(kind = "en"))
-  for(i in 1:length(corpus)) {
-    commitMessages$message[i] <- corpus.temp[[i]]$content
-    #change everything to lower case letters
-    commitMessages$message[i] <- tolower(commitMessages$message[i])
-  }
-  
-}
-
-
 simplifyCommitMessage <- function(eventDataTable, contributorNumberOfTop, amountOfWords) {
   # look up top number of contributors by selecting the author, identifier, group by author in order to count the number of rows for
   # each author, ungroup in order to order all rows in descending order and select only the top authors
