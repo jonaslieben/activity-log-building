@@ -225,10 +225,21 @@ numberFilesTenMostActivePeople <- function(eventDataTable) {
            ungroup %>% 
            arrange(desc(number)))
 }
-#Average amount of files per commit
+#Average amount of files per commit calculated as amount of unique files divided by amount of commits
 averageFilesPerCommit <- function(eventDataTable) {
   #average = amount of unique files divided by the amount of commits
   return(amountOfFilesHaveBeenInProject(eventDataTable) / amountOfCommits(eventDataTable))
+}
+
+#Average amount of files per commit calculated as looking at the average files which have been modified per commit
+averageFilesPerCommitByCounting <- function(eventDataTable) {
+  #calculate the amount of files which have been changed with one commit per commit by selecting the message and filename, grouping on message and counting the amount of files
+  #afterwards we take the average
+  countTable <- eventDataTable %>% 
+           select(message, filename) %>% 
+           group_by(message) %>% 
+           summarise(n = n())
+    return(mean(countTable$n))
 }
 
 #Average amount of file changes (added/modified/removed) per person
@@ -242,7 +253,7 @@ commitsOverTime <- function(eventDataTable) {
   #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
   #convert the timestamp to a date by keeping only the first ten characters
-  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$endTimestamp, 0, 10))
   #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
   #make the input table for the chart which contains the date and all commits, with removed duplicated rows, grouped on date in order that the amount of commits per date can be summed
@@ -260,7 +271,7 @@ fileOperationsOverTime <- function(eventDataTable) {
   #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
   #convert the timestamp to a date by keeping only the first ten characters
-  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$endTimestamp, 0, 10))
   #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
   #make the input table for the modifiedchart which contains the date and all files which are modified grouped on date in order that the number of modified files can be summed
@@ -309,7 +320,7 @@ amountOfActiveUsers <- function(eventDataTable) {
   #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
   #convert the timestamp to a date by keeping only the first ten characters
-  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$timestamp, 0, 10))
+  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$endTimestamp, 0, 10))
   #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
   #make the input table for the chart which contains the date and all authors where duplicate rows are removed, grouped on date in order that the amount of active users per month can be calculated
