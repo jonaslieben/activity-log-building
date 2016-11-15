@@ -64,7 +64,12 @@ loadClassificationScheme <- function() {
   }
   
   #save everything in one variable which needs to be returned
-  classificationScheme <- c(adaptive, adaptiveStrong, corrective, correctiveStrong, perfective, perfectiveStrong)
+  classificationScheme$adaptive <- adaptive
+  classificationScheme$adaptiveStrong <- adaptiveStrong
+  classificationScheme$corrective <- corrective
+  classificationScheme$correctiveStrong <- correctiveStrong
+  classificationScheme$perfective <- perfective
+  classificationScheme$perfectiveStrong <- perfectiveStrong
   return (classificationScheme)
 }
 
@@ -112,12 +117,12 @@ countAmountOfWordsInMessage <- function(message,type) {
 
 countAccordingToClassificationScheme <- function(eventDataTable, classificationScheme) {
   #load the classification dictionarry
-  adaptive <- classificationScheme[1]
-  adaptiveStrong <- classificationScheme[2]
-  corrective <- classificationScheme[3]
-  correctiveStrong <- classificationScheme[4]
-  perfective <- classificationScheme[5]
-  perfectiveStrong <- classificationScheme[6]
+  adaptive <- classificationScheme$adaptive
+  adaptiveStrong <- classificationScheme$adaptiveStrong
+  corrective <- classificationScheme$corrective
+  correctiveStrong <- classificationScheme$correctiveStrong
+  perfective <- classificationScheme$perfective
+  perfectiveStrong <- classificationScheme$perfectiveStrong
   #create new columns for counting the amount of adaptive, corrective and perfective words
   eventDataTable["adaptive"] <- 0
   eventDataTable["corrective"] <- 0
@@ -147,7 +152,7 @@ classifyCommit <- function(eventDataTable) {
       eventDataTable$type[i] <- "unknown"
     }
   }
-  #return the event data table
+  #return the event data
   return (eventDataTable)
 }
 
