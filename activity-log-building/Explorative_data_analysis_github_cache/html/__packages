@@ -5,3 +5,6 @@ ggplot2
 gridExtra
 jsonlite
 httr
+NLP
+tm
+stringr

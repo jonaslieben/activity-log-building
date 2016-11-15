@@ -15,36 +15,38 @@ library(jsonlite)
 library(httr)
 library(jsonlite)
 library(httr)
+library(tm)
+library(stringr)
+
 
 source("Extract_data_functions.R")
 source("General_data_analysis.R")
+source("Classify_commit_messages.R")
 ```
 
-
-```{r extraction, cache=TRUE, include=FALSE}
+```{r, cache=TRUE, include=FALSE}
 #GitHub authentication data
 username = "jonaslieben"
 #do not forget to add a password
 password = ""
 
 #Github project data
-owner = "twitter"
-repository = "twitter-server"
-
-#owner = "jonaslieben"
-#repository = "activity-log-building"
+owner = "apple"
+repository = "swift-corelibs-foundation"
   
 #set up the authentication 
 authenticate <- authenticate(username,password)
 
-branchIdentifiers <- retrieveIdentifiersBranches(authenticate,owner,repository)
-branchIdentifiers
-
-commitIdentifiers <- retrieveAllCommitIdentifiers(authenticate, owner, repository)
-commitIdentifiers
-
 eventData <- extractEventData(authenticate, owner, repository)
+eventData <- addBeginningTimestamp(eventData)
 eventDataTable <- tbl_df(eventData)
+```
+
+
+```{r, cache=TRUE, include=FALSE}
+# classify commit messages according to three categories
+eventDataTable <- countAccordingToClassificationScheme(eventDataTable =  preprocessingNlp(eventData), classificationScheme = loadClassificationScheme())
+eventDataTable <- classifyCommit(eventDataTable)
 
 ```
 
@@ -58,6 +60,10 @@ summary(eventData)
 ###The amount of commits
 ```{r, echo=FALSE, cache=TRUE}
 amountOfCommits(eventDataTable)
+```
+###Type of messages 
+```{r, echo=FALSE, cache=TRUE}
+eventDataTable %>% select(message, type) %>% group_by(type) %>% summarise(n = n())
 ```
 
 ###Amount of unique files currently in project
@@ -151,10 +157,16 @@ tenMostActivePeopleOnFileOperations(eventDataTable)
 numberFilesTenMostActivePeople(eventDataTable)
 ```
 
-###Average amount of files per commit
+###Average amount of files per commit by dividing the amount of unique files with the commits
 ```{r, echo=FALSE, cache=TRUE}
 averageFilesPerCommit(eventDataTable)
 ```
+
+###Average amount of files per commit by looking on average how many files are changed per commit
+```{r, echo=FALSE, cache=TRUE}
+averageFilesPerCommitByCounting(eventDataTable)
+```
+
 
 ###Average amount of file changes (added/modified/removed) per person
 ```{r, echo=FALSE, cache=TRUE}
