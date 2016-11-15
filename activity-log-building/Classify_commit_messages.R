@@ -110,7 +110,7 @@ countAmountOfWordsInMessage <- function(message,type) {
 }
 
 countAccordingToClassificationScheme <- function(eventDataTable, classificationScheme) {
-  #load the classification dictionarry
+  #load the classification dictionnary
   adaptive <- classificationScheme[[1]]
   adaptiveStrong <- classificationScheme[[2]]
   corrective <- classificationScheme[[3]]
@@ -142,11 +142,31 @@ classifyCommit <- function(eventDataTable) {
       eventDataTable$type[i] <- "corrective"
     } else if ((eventDataTable$perfective[i] > eventDataTable$adaptive[i]) && (eventDataTable$perfective[i] > eventDataTable$corrective[i])) {
       eventDataTable$type[i] <- "perfective"
+    } else if ((eventDataTable$adaptive[i] == eventDataTable$corrective[i]) && (eventDataTable$adaptive[i] > eventDataTable$perfective[i])) {
+      # random corrective of adaptive
+      vector <- c("corrective", "adaptive")
+      eventDataTable$type[i] <- sample(vector, 1)
+    } else if ((eventDataTable$adaptive[i] == eventDataTable$perfective[i]) && (eventDataTable$adaptive[i] > eventDataTable$corrective[i])) {
+      # random perfective of adaptive
+      vector <- c("perfective", "adaptive")
+      eventDataTable$type[i] <- sample(vector, 1)
+    } else if ((eventDataTable$corrective[i] == eventDataTable$perfective[i]) && (eventDataTable$corrective[i] > eventDataTable$adaptive[i])) {
+      # random perfective of corrective
+      vector <- c("perfective", "corrective")
+      eventDataTable$type[i] <- sample(vector, 1)
+    } else if ((eventDataTable$corrective[i] == eventDataTable$perfective[i]) && (eventDataTable$corrective[i] == eventDataTable$adaptive[i]) && eventDataTable$corrective[i] != 0){
+      # random perfective, corrective of adaptive
+      vector <- c("perfective", "corrective", "adaptive")
+      eventDataTable$type[i] <- sample(vector, 1)
     } else {
+      # unknown activity
       eventDataTable$type[i] <- "unknown"
     }
   }
-  #return the event data
+  #return the event data without the columns which were needed for making the classification
+  eventDataTable$adaptive <- NULL
+  eventDataTable$corrective <- NULL
+  eventDataTable$perfective <- NULL
   return (eventDataTable)
 }
 
