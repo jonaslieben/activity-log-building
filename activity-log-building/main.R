@@ -1,6 +1,7 @@
 library(jsonlite)
 library(httr)
-
+library(lubridate)
+library(dplyr)
 
 source("Extract_data_functions.R")
 source("Classify_commit_messages.R")
