@@ -12,8 +12,8 @@ username = "jonaslieben"
 password = "test123"
 
 #Github project data
-owner = "twitter"
-repository = "twitter-server"
+owner = "apple"
+repository = "swift-corelibs-foundation"
 
 #owner = "jonaslieben"
 #repository = "activity-log-building"
@@ -31,5 +31,6 @@ eventData <- extractEventData(authenticate, owner, repository)
 eventData <- addBeginningTimestamp(eventData)
 str(eventData)
 
-classificationScheme <- loadClassificationScheme()
-eventDataTable <- countAccordingToClassificationScheme(preprocessingNlp(eventData), classificationScheme)
+eventDataTable <- countAccordingToClassificationScheme(eventDataTable =  preprocessingNlp(eventData), classificationScheme = loadClassificationScheme())
+eventDataTable <- classifyCommit(eventDataTable)
+eventDataTable %>% select(message, type) %>% group_by(type) %>% summarise(n = n())

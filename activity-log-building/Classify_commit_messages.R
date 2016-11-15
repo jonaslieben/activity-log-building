@@ -62,14 +62,8 @@ loadClassificationScheme <- function() {
   for(i in 1:length(corpus)) {
     perfectiveStrong[i] <- corpus.temp[[i]]$content
   }
-  
   #save everything in one variable which needs to be returned
-  classificationScheme$adaptive <- adaptive
-  classificationScheme$adaptiveStrong <- adaptiveStrong
-  classificationScheme$corrective <- corrective
-  classificationScheme$correctiveStrong <- correctiveStrong
-  classificationScheme$perfective <- perfective
-  classificationScheme$perfectiveStrong <- perfectiveStrong
+  classificationScheme <- list(adaptive, adaptiveStrong, corrective, correctiveStrong, perfective, perfectiveStrong)
   return (classificationScheme)
 }
 
@@ -117,12 +111,12 @@ countAmountOfWordsInMessage <- function(message,type) {
 
 countAccordingToClassificationScheme <- function(eventDataTable, classificationScheme) {
   #load the classification dictionarry
-  adaptive <- classificationScheme$adaptive
-  adaptiveStrong <- classificationScheme$adaptiveStrong
-  corrective <- classificationScheme$corrective
-  correctiveStrong <- classificationScheme$correctiveStrong
-  perfective <- classificationScheme$perfective
-  perfectiveStrong <- classificationScheme$perfectiveStrong
+  adaptive <- classificationScheme[[1]]
+  adaptiveStrong <- classificationScheme[[2]]
+  corrective <- classificationScheme[[3]]
+  correctiveStrong <- classificationScheme[[4]]
+  perfective <- classificationScheme[[5]]
+  perfectiveStrong <- classificationScheme[[6]]
   #create new columns for counting the amount of adaptive, corrective and perfective words
   eventDataTable["adaptive"] <- 0
   eventDataTable["corrective"] <- 0
