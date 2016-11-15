@@ -84,10 +84,12 @@ addBeginningTimestamp <- function(eventData) {
   tempEventData <- tbl_df(eventData)
   
   #add as a temporary beginning timestemp the endTimestamp
-  tempEventData$beginningTimestamp <- tempEventData$endTimestamp
+  tempEventData$beginningTimestamp <- as.character(tempEventData$endTimestamp)
   
   #save the amount of records in a new variable
   amountOfRecords <- length(eventData$author)
+  
+  tempEventData$endTimestamp <- ymd_hms(tempEventData$endTimestamp)
   
   #for each row, put a beginning timestamp using the data manipulation techniques described below
   for(i in 1:amountOfRecords) {
@@ -99,7 +101,6 @@ addBeginningTimestamp <- function(eventData) {
     
     #make a table containing only the identifiers and endTimeStamp of the author, who did the commit of record i, and sort all rows on endTimestamp in descending order
     authorEventData <- tempEventData %>% filter(authorAtIndex == author) %>% arrange(desc(endTimestamp)) %>% select(endTimestamp,identifier) %>% distinct()
-    
     #look up the index of the row of the AuthorEventData object with the identifier which is saved earlier
     indexAuthorEventData <- match(identifierAtIndex, authorEventData$identifier)
     #the index of the beginning timestamp is just the row before in the authorEventData table
@@ -110,9 +111,12 @@ addBeginningTimestamp <- function(eventData) {
     if(indexPreviousRowAuthorEventData != 0) {
       beginningTimestamp <- authorEventData$endTimestamp[indexPreviousRowAuthorEventData]
     } else {
-      beginningTimestamp <- authorEventData$endTimestamp[1]
+      beginningTimestamp <- NA
     }
-    
+    #save the beginningTimeStamp again as a string
+    if(!is.na(beginningTimestamp)) {
+      beginningTimestamp <- paste(paste(year(beginningTimestamp), month(beginningTimestamp), day(beginningTimestamp), sep ="-"), paste(hour(beginningTimestamp), minute(beginningTimestamp), second(beginningTimestamp), sep = ":"), " _ ")
+    }
     #put the beginningTimeStamp in the dataObject
     eventData$beginningTimestamp[i] <- beginningTimestamp
   }
