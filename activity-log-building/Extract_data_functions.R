@@ -10,7 +10,7 @@ retrieveIdentifiersBranches <- function(authentication, owner, repository) {
   branchesJSON <- GET(url, authentication)
   
   #parse the JSON output to dataframes
-  branches <- fromJSON(content(branchesJSON, "text"))
+  branches <- fromJSON(httr::content(branchesJSON, as = "text"))
   
   #save the sha (the unique identifier of in this case a branch) in an object in order that it can be used for retrieving the commits
   shaStrings <- branches$commit$sha
@@ -33,7 +33,7 @@ retrieveAllCommitIdentifiers <- function(authentication, owner, repository) {
       # do the API call for getting all the commits of a certain page
       commitJSON <- GET(url,query = list(per_page = 100, sha = branchIdentifier, page = index), authentication)
       # convert the JSON to R objects
-      commitData <- fromJSON(content(commitJSON, "text"))
+      commitData <- fromJSON(httr::content(commitJSON, "text"))
       index = index + 1
       # if there are no items anymore, stop the loop
       if(length(commitData$sha) == 0) {
@@ -62,7 +62,7 @@ extractEventData <- function(authentication, owner, repository) {
     #do an API call with the url mentioned above
     commitJSON <- GET(url, authentication)
     #parse the JSON to an R object
-    commitData <- fromJSON(content(commitJSON, "text"))
+    commitData <- fromJSON(httr::content(commitJSON, "text"))
     
     #check the amount of files for a certain commit
     amountOfReps <- length(commitData$files$filename)
@@ -77,51 +77,9 @@ extractEventData <- function(authentication, owner, repository) {
     # add the new event data to the current event data
     eventData <- rbind(eventData,newEventData)
   }
+  #save endtimestamp as lubridate object
+  eventData$endTimestamp <- ymd_hms(eventData$endTimestamp)
   return(eventData)
 }
 
-addBeginningTimestamp <- function(eventData) {
-  tempEventData <- tbl_df(eventData)
-  
-  #add as a temporary beginning timestemp the endTimestamp
-  tempEventData$beginningTimestamp <- as.character(tempEventData$endTimestamp)
-  
-  #save the amount of records in a new variable
-  amountOfRecords <- length(eventData$author)
-  
-  tempEventData$endTimestamp <- ymd_hms(tempEventData$endTimestamp)
-  
-  #for each row, put a beginning timestamp using the data manipulation techniques described below
-  for(i in 1:amountOfRecords) {
-    #save the identifier and author. The unlisting is done in order to be able to make comparisons
-    identifierAtIndex <- tempEventData %>% select(identifier) %>% slice(i)
-    identifierAtIndex <- unlist(identifierAtIndex)
-    authorAtIndex <- tempEventData %>% select(author) %>% slice(i)
-    authorAtIndex <- unlist(authorAtIndex)
-    
-    #make a table containing only the identifiers and endTimeStamp of the author, who did the commit of record i, and sort all rows on endTimestamp in descending order
-    authorEventData <- tempEventData %>% filter(authorAtIndex == author) %>% arrange(desc(endTimestamp)) %>% select(endTimestamp,identifier) %>% distinct()
-    #look up the index of the row of the AuthorEventData object with the identifier which is saved earlier
-    indexAuthorEventData <- match(identifierAtIndex, authorEventData$identifier)
-    #the index of the beginning timestamp is just the row before in the authorEventData table
-    indexPreviousRowAuthorEventData <- indexAuthorEventData - 1
-    
-    #if there is a previous row, take the endtimestamp of the previous activity executed by the author as the beginning timestamp
-    #if there is no previous row, take the endtimestamp of the current activity as the beginning timestamp
-    if(indexPreviousRowAuthorEventData != 0) {
-      beginningTimestamp <- authorEventData$endTimestamp[indexPreviousRowAuthorEventData]
-    } else {
-      beginningTimestamp <- NA
-    }
-    #save the beginningTimeStamp again as a string
-    if(!is.na(beginningTimestamp)) {
-      beginningTimestamp <- paste(paste(year(beginningTimestamp), month(beginningTimestamp), day(beginningTimestamp), sep ="-"), paste(hour(beginningTimestamp), minute(beginningTimestamp), second(beginningTimestamp), sep = ":"), " _ ")
-    }
-    #put the beginningTimeStamp in the dataObject
-    eventData$beginningTimestamp[i] <- beginningTimestamp
-  }
-  
-  #return the table with the beginningTimeStamp
-  return(eventData)
-}
 
