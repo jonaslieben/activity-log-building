@@ -13,15 +13,13 @@ library(ggplot2)
 library(gridExtra)
 library(jsonlite)
 library(httr)
-library(jsonlite)
-library(httr)
 library(tm)
 library(stringr)
-
 
 source("Extract_data_functions.R")
 source("General_data_analysis.R")
 source("Classify_commit_messages.R")
+source("Calculate_right_beginning_timestamp.R")
 ```
 
 ```{r, cache=TRUE, include=FALSE}
@@ -29,16 +27,21 @@ source("Classify_commit_messages.R")
 username = "jonaslieben"
 #do not forget to add a password
 password = ""
+```
 
+```{r, cache=TRUE, include=FALSE}
 #Github project data
 owner = "apple"
 repository = "swift-corelibs-foundation"
   
 #set up the authentication 
 authenticate <- authenticate(username,password)
+```
 
+
+```{r, cache=TRUE, include=FALSE}
+# extract the event data from Github
 eventData <- extractEventData(authenticate, owner, repository)
-eventData <- addBeginningTimestamp(eventData)
 eventDataTable <- tbl_df(eventData)
 ```
 
@@ -105,6 +108,56 @@ maxFilesChangedPerPerson(eventDataTable)
 ###Min amount of files changed by one person
 ```{r, echo=FALSE, cache=TRUE}
 minFilesChangedPerPerson(eventDataTable)
+```
+
+###Average commits per day per person visualised in a density plot
+```{r, echo=FALSE, cache=TRUE}
+averageCommitsPerPersonPerDay(eventDataTable)
+```
+
+###Average commits per day per person visualised in a density plot without outliers (bigger than 2 SDs)
+```{r, echo=FALSE, cache=TRUE}
+averageCommitsPerPersonPerDayWithoutOutliers(eventDataTable)
+```
+
+###Highest average commits per day per person
+```{r, echo=FALSE, cache=TRUE}
+highestAverageCommitsPerPersonPerDay(eventDataTable)
+```
+
+###Mean average commits per day per person
+```{r, echo=FALSE, cache=TRUE}
+meanAverageCommitsPerPersonPerDay(eventDataTable)
+```
+
+###lowest average commits per day per person
+```{r, echo=FALSE, cache=TRUE}
+lowestAverageCommitsPerPersonPerDay(eventDataTable)
+```
+
+###Average commits per week per person visualised in a density plot
+```{r, echo=FALSE, cache=TRUE}
+averageCommitsPerPersonPerWeek(eventDataTable)
+```
+
+###Average commits per week per person visualised in a density plot without outliers (bigger than 2 SDs)
+```{r, echo=FALSE, cache=TRUE}
+averageCommitsPerPersonPerWeekWithoutOutliers(eventDataTable)
+```
+
+###Highest average commits per week per person
+```{r, echo=FALSE, cache=TRUE}
+highestAverageCommitsPerPersonPerWeek(eventDataTable)
+```
+
+###Mean average commits per week per person
+```{r, echo=FALSE, cache=TRUE}
+meanAverageCommitsPerPersonPerWeek(eventDataTable)
+```
+
+###lowest average commits per week per person
+```{r, echo=FALSE, cache=TRUE}
+lowestAverageCommitsPerPersonPerWeek(eventDataTable)
 ```
 
 ###Amount of files added, modified, removed and renamed 

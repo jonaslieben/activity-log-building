@@ -90,6 +90,199 @@ minFilesChangedPerPerson <- function(eventDataTable) {
   return(summarise(filesChangedByOnePerson, min(files)))
 }
 
+#Average commits per day per person visualised in a density plot
+averageCommitsPerPersonPerDay <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make a date-object, group by author and date and count the amount of commits per person per day
+  #take the average over the days per person and visualise in a density plot with on the x-axis the average
+  commitPerDays <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), month(endTimestamp), day(endTimestamp), sep = "/")) %>% 
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount))
+  ggplot(data = commitPerDays) + geom_density(aes(x = average))
+}
+
+#Average commits per day per person visualised in a density plot without outliers (bigger than 2 SDs)
+averageCommitsPerPersonPerDayWithoutOutliers <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make a date-object, group by author and date and count the amount of commits per person per day
+  #take the average over the days per person
+  commitPerDays <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), month(endTimestamp), day(endTimestamp), sep = "/")) %>%
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount))
+  #take the average of everyone
+  averageAllRows <- commitPerDays %>% 
+    select(average) %>% 
+    summarise(average = mean(average))
+  #take the SD of all averages
+  SD <- commitPerDays %>% 
+    select(average) %>%
+    summarise(SD = sd(average))
+  
+  cutOff <- averageAllRows + 2 * SD
+  #filter all rows with an average smaller than or equal 2 times the SD plus the average which is the cutoff
+  commitPerDays <- commitPerDays %>%
+    filter(average <= cutOff$average[1])
+  #visualise in a density plot with on the x-axis the average
+  ggplot(data = commitPerDays) + geom_density(aes(x = average))
+}
+
+#Highest average commits per day per person
+highestAverageCommitsPerPersonPerDay <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make a date-object, group by author and date and count the amount of commits per person per day
+  #take the average over the days per person
+  #keep only the highest average
+  maximumCommitPerDays <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), month(endTimestamp), day(endTimestamp), sep = "/")) %>%
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount)) %>% 
+    ungroup() %>%
+    summarise(max = max(average))
+  return(maximumCommitPerDays)
+}
+
+#Mean average commits per day per person
+meanAverageCommitsPerPersonPerDay <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make a date-object, group by author and date and count the amount of commits per person per day
+  #take the average over the days per person
+  #take the mean
+  meanCommitPerDays <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), month(endTimestamp), day(endTimestamp), sep = "/")) %>%
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount)) %>% 
+    ungroup() %>%
+    summarise(mean = mean(average))
+  return(meanCommitPerDays)
+}
+
+#lowest average commits per day per person
+lowestAverageCommitsPerPersonPerDay <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make a date-object, group by author and date and count the amount of commits per person per day
+  #take the average over the days per person
+  #keep only the lowest value
+  lowestCommitPerDays <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), month(endTimestamp), day(endTimestamp), sep = "/")) %>%
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount)) %>% 
+    ungroup() %>%
+    summarise(minimum = min(average))
+  return(lowestCommitPerDays)
+}
+
+#Average commits per week per person visualised in a density plot
+averageCommitsPerPersonPerWeek <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make an object containing the week and year, group by author and date and count the amount of commits per person per week
+  #take the average over the days per person and visualise in a density plot with on the x-axis the average
+  commitsPerWeek <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), week(endTimestamp), sep = "/")) %>% 
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount))
+  ggplot(data = commitsPerWeek) + geom_density(aes(x = average))
+}
+
+#Average commits per week per person visualised in a density plot without outliers (bigger than 2 SDs)
+averageCommitsPerPersonPerWeekWithoutOutliers <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make an object containing the week and year, group by author and date and count the amount of commits per person per week
+  #take the average over the days per person
+  commitsPerWeek <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), week(endTimestamp), sep = "/")) %>% 
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount))
+  #take the average of everyone
+  averageAllRows <- commitsPerWeek %>% 
+    select(average) %>% 
+    summarise(average = mean(average))
+  #take the SD of all averages
+  SD <- commitsPerWeek %>% 
+    select(average) %>%
+    summarise(SD = sd(average))
+  
+  cutOff <- averageAllRows + 2 * SD
+  #filter all rows with an average smaller than or equal 2 times the SD plus the average which is the cutoff
+  commitsPerWeek <- commitsPerWeek %>%
+    filter(average <= cutOff$average[1])
+  #visualise in a density plot with on the x-axis the average
+  ggplot(data = commitsPerWeek) + geom_density(aes(x = average))
+}
+
+#Highest average commits per week per person
+highestAverageCommitsPerPersonPerWeek <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make an object containing the week and year, group by author and date and count the amount of commits per person per week
+  #take the average over the days per person and keep only the highest average
+  maximumCommitPerWeek <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), week(endTimestamp), sep = "/")) %>% 
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount)) %>% 
+    ungroup() %>%
+    summarise(max = max(average))
+  return(maximumCommitPerWeek)
+}
+
+#Mean average commits per week per person
+meanAverageCommitsPerPersonPerWeek <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make an object containing the week and year, group by author and date and count the amount of commits per person per week
+  #take the average over the days per person and take the mean
+  meanCommitsPerWeek <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), week(endTimestamp), sep = "/")) %>% 
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount)) %>% 
+    ungroup() %>%
+    summarise(mean = mean(average))
+  return(meanCommitsPerWeek)
+}
+
+#lowest average commits per week per person
+lowestAverageCommitsPerPersonPerWeek <- function(eventDataTable) {
+  #select identifier, author and endtimestamp, keep only the unique rows in order to not double count the number of commits
+  #make an object containing the week and year, group by author and date and count the amount of commits per person per week
+  #take the average over the days per person and keep only the lowest value
+  lowestCommitsPerWeek <- eventDataTable %>% 
+    select(identifier, author, endTimestamp) %>% 
+    distinct() %>%
+    mutate(date = paste(year(endTimestamp), week(endTimestamp), sep = "/")) %>% 
+    group_by(author, date) %>% 
+    summarise(amount = n()) %>% 
+    summarise(average = mean(amount)) %>% 
+    ungroup() %>%
+    summarise(minimum = min(average))
+  return(lowestCommitsPerWeek)
+}
+
 #Amount of files added, modified, removed and renamed 
 amountOfFileOperationsPerType <- function(eventDataTable) {
   #select the identifier and the status of all records, group on status and count the amount of records
@@ -252,8 +445,7 @@ averageFilesPerPerson <- function(eventDataTable) {
 commitsOverTime <- function(eventDataTable) {
   #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
-  #convert the timestamp to a date by keeping only the first ten characters
-  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$endTimestamp, 0, 10))
+  eventDataTableTemp$date <- eventDataTableTemp$endTimestamp
   #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
   #make the input table for the chart which contains the date and all commits, with removed duplicated rows, grouped on date in order that the amount of commits per date can be summed
@@ -270,8 +462,7 @@ commitsOverTime <- function(eventDataTable) {
 fileOperationsOverTime <- function(eventDataTable) {
   #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
-  #convert the timestamp to a date by keeping only the first ten characters
-  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$endTimestamp, 0, 10))
+  eventDataTableTemp$date <- eventDataTableTemp$endTimestamp
   #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
   #make the input table for the modifiedchart which contains the date and all files which are modified grouped on date in order that the number of modified files can be summed
@@ -320,7 +511,7 @@ amountOfActiveUsers <- function(eventDataTable) {
   #save event data table in a temporary variable in order that the original one will not be manipulated
   eventDataTableTemp <- eventDataTable
   #convert the timestamp to a date by keeping only the first ten characters
-  eventDataTableTemp$date <- ymd(substr(eventDataTableTemp$endTimestamp, 0, 10))
+  eventDataTableTemp$date <- eventDataTableTemp$endTimestamp
   #set the day of every variable in date to one
   eventDataTableTemp$date <- floor_date(eventDataTableTemp$date, "month")
   #make the input table for the chart which contains the date and all authors where duplicate rows are removed, grouped on date in order that the amount of active users per month can be calculated
