@@ -1,3 +1,6 @@
+library(tm)
+
+#Loads a classification dictionnary which can be used for classifying the commit messages
 loadClassificationScheme <- function() {
   # Load the classification dictionary from the paper of Andreas Mauczka, Markus Huber Christian Schanes, Wolfgang Schramm, Mario Bernhart, and Thomas Grechenig
   # title: Tracing Your Maintenance Work – A Cross-Project Validation of an Automated Classification Dictionary for Commit Messages
@@ -67,6 +70,7 @@ loadClassificationScheme <- function() {
   return (classificationScheme)
 }
 
+#preprocesses the commit messages by deleting unnecessary (meaningless) words and characters
 preprocessingNlp <- function(eventData) {
   
   #create a dplyr table
@@ -97,6 +101,7 @@ preprocessingNlp <- function(eventData) {
   return (eventDataTable)
 }
 
+#counts amount of words in a message which correspond to all of the elements of vector type
 countAmountOfWordsInMessage <- function(message,type) {
   #initialise the variable sum and assign zero
   sum <- 0
@@ -109,6 +114,7 @@ countAmountOfWordsInMessage <- function(message,type) {
   return(sum)
 }
 
+#count the amount of words of each type in a commit messages and saves this number for each type in a column
 countAccordingToClassificationScheme <- function(eventDataTable, classificationScheme) {
   #load the classification dictionnary
   adaptive <- classificationScheme[[1]]
@@ -130,11 +136,14 @@ countAccordingToClassificationScheme <- function(eventDataTable, classificationS
   return (eventDataTable)
 }
 
+#classifies the commit messages according to the amounts calculated in the columns of each type.
 classifyCommit <- function(eventDataTable) {
   #create a new column with the name type
   eventDataTable["type"] <- ""
   #for each message, check which one has the highest count value and classify the message according to these count values
-  #if there are two or more values which are highest, unknown is assigned to the type
+  #if two values are equally high and are the highest value, a random type of these two is chosen
+  #if three values are equally high and not zero, a random type of the three is chosen
+  #if all three values equal zero, unknown is assigned
   for(i in 1:length(eventDataTable$message)) {
     if((eventDataTable$adaptive[i] > eventDataTable$corrective[i]) && (eventDataTable$adaptive[i] > eventDataTable$perfective[i])) {
       eventDataTable$type[i] <- "adaptive"
