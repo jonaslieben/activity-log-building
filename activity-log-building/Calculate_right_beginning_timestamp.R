@@ -43,10 +43,18 @@ addBeginningTimeStampsToFirstCommits <- function(eventDataTable) {
   #find all the authors which contributed to the project
   authors <- eventDataTable %>% select(author) %>% distinct()
   
-  
+  #calculate for each author the average duration
+  #if there is no average duration which can be calculated, use the average duration of the entire data set
+  #fill in the begintimestamp of the rows which do not have one by subtracting the average duration from the end timestamp
   for(i in 1:length(authors$author)) {
     eventDataTableForAuthor <- eventDataTableTemp %>% filter(author == as.character(authors$author[i])) %>% filter(!is.na(duration))
-    averageDuration <- eventDataTableForAuthor %>% summarise(avg = mean(duration))
+    if (length(eventDataTableForAuthor$author) > 0) {
+      averageDuration <- eventDataTableForAuthor %>% summarise(avg = mean(duration))
+    } else {
+      averageDuration <- eventDataTableTemp %>% 
+        filter(!is.na(duration)) %>%
+        summarise(avg = mean(duration))
+    }
     for(j in 1:length(eventDataTableTemp$identifier)) {
       if(is.na(eventDataTableTemp$beginningTimestamp[j]) && eventDataTableTemp$author[j] == as.character(authors$author[i])) {
         end <- eventDataTableTemp$endTimestamp[j]
