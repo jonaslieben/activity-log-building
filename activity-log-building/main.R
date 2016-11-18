@@ -12,7 +12,7 @@ source("Calculate_right_beginning_timestamp.R")
 #GitHub authentication data
 username = "jonaslieben"
 #do not forget to add a password
-password = ""
+password = "test123"
 
 #Github project data
 owner = "apple"
@@ -37,7 +37,6 @@ eventDataTable <- addBeginningTimeStampsToFirstCommits(eventDataTable)
 eventData <- eventDataTable
 
 #remove variables which are not relevant
-eventData$identifier <- NULL
 eventDataTable <- NULL
 
 
