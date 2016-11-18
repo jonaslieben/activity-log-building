@@ -1,6 +1,6 @@
 library(tm)
 
-#Loads a classification dictionnary which can be used for classifying the commit messages
+#Loads a classification dictionary which can be used for classifying the commit messages
 loadClassificationScheme <- function() {
   # Load the classification dictionary from the paper of Andreas Mauczka, Markus Huber Christian Schanes, Wolfgang Schramm, Mario Bernhart, and Thomas Grechenig
   # title: Tracing Your Maintenance Work – A Cross-Project Validation of an Automated Classification Dictionary for Commit Messages
@@ -116,7 +116,7 @@ countAmountOfWordsInMessage <- function(message,type) {
 
 #count the amount of words of each type in a commit messages and saves this number for each type in a column
 countAccordingToClassificationScheme <- function(eventDataTable, classificationScheme) {
-  #load the classification dictionnary
+  #load the classification dictionary
   adaptive <- classificationScheme[[1]]
   adaptiveStrong <- classificationScheme[[2]]
   corrective <- classificationScheme[[3]]
@@ -143,7 +143,7 @@ classifyCommit <- function(eventDataTable) {
   #for each message, check which one has the highest count value and classify the message according to these count values
   #if two values are equally high and are the highest value, a random type of these two is chosen
   #if three values are equally high and not zero, a random type of the three is chosen
-  #if all three values equal zero, unknown is assigned
+  #if all three values equal zero, other is assigned
   for(i in 1:length(eventDataTable$message)) {
     if((eventDataTable$adaptive[i] > eventDataTable$corrective[i]) && (eventDataTable$adaptive[i] > eventDataTable$perfective[i])) {
       eventDataTable$type[i] <- "adaptive"
@@ -169,7 +169,7 @@ classifyCommit <- function(eventDataTable) {
       eventDataTable$type[i] <- sample(vector, 1)
     } else {
       # unknown activity
-      eventDataTable$type[i] <- "unknown"
+      eventDataTable$type[i] <- "other"
     }
   }
   #return the event data without the columns which were needed for making the classification
