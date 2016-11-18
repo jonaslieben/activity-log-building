@@ -22,7 +22,7 @@ The packages needed to execute the code in all the files are:
 
 ##Aim
 
-This project focuses and enables you to do two activities:
+This project focuses on and enables you to do two activities:
 
 1. Load data from Github and make an eventlog containing a beginningTimestamp, endingTimestamp, resource and meaningful activity name
 
@@ -32,9 +32,9 @@ This project focuses and enables you to do two activities:
 
 There is one file for each of the activities mentioned above. The main.R file runs the code to extract the data and process it in order to get an event log. The Explorative_data_analysis_github.Rmd is a markdown document containing some descriptive statistics about the dataset.
 
-Other supporting files with there functions include:
+Other supporting files with needed functions include:
 
-* Readme: this file explaining how to use the code
+* Readme: this file explains how to use the code
 
 * Extract_data_functions.R: the functions which do the GitHub API calls and parse it to an R dataframe
 
@@ -44,7 +44,7 @@ Other supporting files with there functions include:
 
 * Calculate_right_beginning_timestamp.R: the functions to impute a meaningful beginning timestamp, as this is not provided by GitHub
 
-Less relevant files are: 
+Less relevant files are, which are not used by the two fundamental files: 
 
 * AnalysisCommitMessagesTopThreeContributers.R: contains a function to keep only the first x words in the commit message
 
@@ -56,7 +56,7 @@ In order to use this code for other projects a couple of lines of code should be
 
 These are the authentication information. A github account is needed to be able to load the data. A valid username and passwords needs to be provided. Therefore the username variable and password variable should contain valid credentials.
 
-Moreover, the project data needs to be given. You can access github projects with urls in the following format: https://github.com/owner/repository. An example is https://github.com/jonaslieben/activity-log-building. Therefore the owner variable should contain "jonaslieben"" in this example and the repository variable should contain "activity-log-building"
+Moreover, the project data needs to be given. You can access github projects with urls in the following format: https://github.com/owner/repository. An example is https://github.com/jonaslieben/activity-log-building. Therefore the owner variable should contain "jonaslieben in this example and the repository variable should contain "activity-log-building"
 
 If these variables are changed to valid information about other projects, other datasets of these projects can be generated.
 
@@ -73,5 +73,31 @@ This document together with the comments in the code serves as the documentation
 
 ### Classification of commit messages
 
+For the classification of the commit messages, we follow a procedure making use of text mining techniques and a classification dictionary. This dictionary is proposed in the paper: 2012 - Mauczka et al. - Tracing your maintance work a cross-project validation.
+
+The first step is to do a preprocessing step. In this step, "\\n" is removed from commit messages, all words are stemmed, whitespaces are removed and all capitalizations are removed.
+
+Then the dictionary is loaded and all words in the dictionary are stemmed.
+
+The second step is to count the amount of words which are equal to the one in the dictionary for each category. Thus, for each commit message, we have three variables, which represent the amount of words which are counted for each category.
+
+The third step is to actually classify the commit messages. The commit messages are assigned to the category which has the highest number. In case there are two or three highest numbers which equal each other, a random assignement is done. If there are, however, no words in the commit message which equal the words in one of the categories, the type "other" is assigned.
+
+The three categories of activities are corrective, adaptive and perfective tasks. A definition of these activities can be found below:
+
+- Corrective Software Maintenance: "Activities that are necessary to fix processing failures, performance failures or implementation failures" (Mauczka et al., 2012)
+
+- Adaptive Software Maintenance: "Activities that focus on changes in the data environment or changes in the processing environment" (Mauczka et al., 2012)
+
+- Perfective Software Maintenance: "Activities that strive to decrease processing inefficiency, enhance the performance or increase the maintainability" (Mauczka et al., 2012)
+
 ### Beginning timestamp
+
+We assumed that the beginning timestamp of an activity is the end timestamp of the previous activity performed by the same resource. There are however two problems with this assumption: 
+
+1. If the duration between the beginning and end-timestamp is unacceptably long, there is a possibility that the resource was just not actively working on the project.
+
+2. The beginning timestamp of the first activity performed by a resource is unknown.
+
+To solve these problems, we temporarly assigned the beginning timestamp as the end timestamp of the previous activity. Then we calculated the duration of the activities and compared the duration of each activity with the average duration + 2 * standard deviation of the duration. If this duration is longer, we removed the beginning timestamp in order that no outliers are present in the dataset. For the missing beginning timestamps, we calculate the average duration of all activities performed by one resource and impute for the value of the beginning timestamp the end timestamp minus the average duration.
 
