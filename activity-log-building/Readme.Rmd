@@ -1,0 +1,77 @@
+---
+title: "Readme"
+author: "Jonas Lieben"
+date: "11/17/2016"
+output: html_document
+---
+
+##Required packages
+The packages needed to execute the code in all the files are:
+
+1. lubridate: for processing the dates
+
+2. dplyr: for simple data manipulation
+
+3. httr: for making API calls to the Github server
+
+4. jsonlite: for parsing the JSON to data.frames
+
+5. ggplot2 and gridExtra: for making charts and graphs
+
+6. tm and stringr: for manipulating commit messages (text mining)
+
+##Aim
+
+This project focuses and enables you to do two activities:
+
+1. Load data from Github and make an eventlog containing a beginningTimestamp, endingTimestamp, resource and meaningful activity name
+
+2. Perform a small exploratory data analysis
+
+##Project structure
+
+There is one file for each of the activities mentioned above. The main.R file runs the code to extract the data and process it in order to get an event log. The Explorative_data_analysis_github.Rmd is a markdown document containing some descriptive statistics about the dataset.
+
+Other supporting files with there functions include:
+
+* Readme: this file explaining how to use the code
+
+* Extract_data_functions.R: the functions which do the GitHub API calls and parse it to an R dataframe
+
+* General_data_analysis.R: the functions which are used in the markdown document to perform the exploratorive data analysis
+
+* Classify_commit_messages.R: this file contains functions which help to classify each commit to one of four categories using text mining and a classification dictionnary
+
+* Calculate_right_beginning_timestamp.R: the functions to impute a meaningful beginning timestamp, as this is not provided by GitHub
+
+Less relevant files are: 
+
+* AnalysisCommitMessagesTopThreeContributers.R: contains a function to keep only the first x words in the commit message
+
+* API call documentation.Rmd: a file explaining the used API calls, with examples and examples of the generated output.
+
+##Use for different projects
+
+In order to use this code for other projects a couple of lines of code should be changed in the main.R and the explorative_data_analysis_github.Rmd file. 
+
+These are the authentication information. A github account is needed to be able to load the data. A valid username and passwords needs to be provided. Therefore the username variable and password variable should contain valid credentials.
+
+Moreover, the project data needs to be given. You can access github projects with urls in the following format: https://github.com/owner/repository. An example is https://github.com/jonaslieben/activity-log-building. Therefore the owner variable should contain "jonaslieben"" in this example and the repository variable should contain "activity-log-building"
+
+If these variables are changed to valid information about other projects, other datasets of these projects can be generated.
+
+Keep in mind that only **projects with less than 5000 commits** can be chosen, as the GitHub API allows you to make maximum 5000 calls per hour
+
+The exploratory data analysis can be extended. In order to keep a good overview and everything consistent, change the general_data_analysis.R file as well as the markdown document.
+
+
+##Documentation
+
+This document together with the comments in the code serves as the documentation of this project
+
+##Assumptions about the classification of commit messages and beginning timestamp
+
+### Classification of commit messages
+
+### Beginning timestamp
+
