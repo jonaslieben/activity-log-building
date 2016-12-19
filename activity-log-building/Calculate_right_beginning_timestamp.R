@@ -6,7 +6,7 @@ removeBeginningTimeStampFromOutlierObservations <- function(eventDataTable) {
   eventDataTableTemp <- eventDataTable %>%
     filter(!is.na(beginningTimestamp)) %>%
     
-    mutate(duration = as.numeric(difftime(beginningTimestamp, endTimestamp, units = "secs")))
+    mutate(duration = as.numeric(difftime(endTimestamp, beginningTimestamp, units = "secs")))
   
   #find all the authors which contributed to the project
   authors <- eventDataTable %>% select(author) %>% distinct()
@@ -38,7 +38,7 @@ removeBeginningTimeStampFromOutlierObservations <- function(eventDataTable) {
 addBeginningTimeStampsToFirstCommits <- function(eventDataTable) {
   #create three new variables: one for the begin timestamp in a lubridate object, one for the end timestamp in a lubridate object and one for the duration between the two
   eventDataTableTemp <- eventDataTable %>%
-    mutate(duration = as.numeric(difftime(beginningTimestamp, endTimestamp, units = "secs")))
+    mutate(duration = as.numeric(difftime(endTimestamp, beginningTimestamp, units = "secs")))
   
   #find all the authors which contributed to the project
   authors <- eventDataTable %>% select(author) %>% distinct()
