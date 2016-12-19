@@ -4,7 +4,7 @@ library(lubridate)
 library(dplyr)
 library(tm)
 library(stringr)
-
+library(SnowballC)
 source("Extract_data_functions.R")
 source("Classify_commit_messages.R")
 source("Calculate_right_beginning_timestamp.R")

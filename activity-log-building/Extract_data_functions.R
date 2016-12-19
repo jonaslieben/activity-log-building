@@ -2,6 +2,7 @@ library(jsonlite)
 library(httr)
 library(dplyr)
 library(lubridate)
+library(SnowballC)
 
 # get all identifiers of all branches of a certain repository on github in a vector. Inputs are the authentication, owner and repository
 retrieveIdentifiersBranches <- function(authentication, owner, repository) {
