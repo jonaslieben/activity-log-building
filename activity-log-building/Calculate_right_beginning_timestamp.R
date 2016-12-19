@@ -90,8 +90,8 @@ addProvisionalBeginningTimestamp <- function(eventData) {
     authorEventData <- tempEventData %>% filter(authorAtIndex == author) %>% arrange(desc(endTimestamp)) %>% select(endTimestamp,identifier) %>% distinct()
     #look up the index of the row of the AuthorEventData object with the identifier which is saved earlier
     indexAuthorEventData <- match(identifierAtIndex, authorEventData$identifier)
-    #the index of the beginning timestamp is just the row before in the authorEventData table
-    indexPreviousRowAuthorEventData <- indexAuthorEventData - 1
+    #the index of the beginning timestamp is just the row after in the authorEventData table, because we sort in descending order which means that the previous event happened in the next row
+    indexPreviousRowAuthorEventData <- indexAuthorEventData + 1
     
     #if there is a previous row, take the endtimestamp of the previous activity executed by the author as the beginning timestamp
     #if there is no previous row, take the endtimestamp of the current activity as the beginning timestamp
