@@ -20,6 +20,8 @@ The packages needed to execute the code in all the files are:
 
 6. tm and stringr: for manipulating commit messages (text mining)
 
+7. SnowballC: library that implements Porter's word stemming algorithm for collapsing words to a common root to aid comparison of vocabulary
+
 ##Aim
 
 This project focuses on and enables you to do two activities:
